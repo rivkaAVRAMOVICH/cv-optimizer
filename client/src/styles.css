@@ -1,0 +1,92 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #f2f2f2;
+}
+
+.container {
+  max-width: 800px;
+  background: white;
+  margin: 30px auto;
+  padding: 20px;
+  border-radius: 12px;
+}
+/* Results.css */
+
+/* Container לכל התוצאות */
+.results-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* כותרת הראשית */
+.results-container h2 {
+  text-align: center;
+  color: #2c3e50;
+}
+
+/* כרטיס (card) לכל סעיף */
+.result-card {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* כותרת פנימית של הכרטיס */
+.result-card h3 {
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+/* pre ל-improved CV */
+.result-card pre {
+  white-space: pre-wrap;
+  background-color: #e8f0fe;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+/* כפתור הורדה */
+.download-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: #fff;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.download-btn:hover {
+  background-color: #2c80c2;
+}
+
+/* Spinner */
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
