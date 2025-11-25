@@ -64,31 +64,87 @@ function wrapText(text, maxCharsPerLine = 90) {
 }
 
 // --- Create PDF from improved text ---
+// --- Create BEAUTIFUL styled PDF from improved text ---
 async function createPdfFromText(filename, improvedText) {
   const pdfDoc = await PDFDocument.create();
-  let page = pdfDoc.addPage();
-  const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-  const fontSize = 12;
+  let page = pdfDoc.addPage([595, 842]); // A4
+  const fontBody = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
   const margin = 50;
   const { width, height } = page.getSize();
-
-  const wrapped = wrapText(improvedText, 80);
   let y = height - margin;
 
-  for (const line of wrapped) {
-    if (y < margin) {
-      page = pdfDoc.addPage();
+  const lineHeight = 16;
+  const titleSize = 18;
+  const bodySize = 12;
+
+  // ציור שורה + ירידה שורה
+  function drawLine(text, size = bodySize, bold = false, indent = 0) {
+    if (y < margin + 40) {
+      page = pdfDoc.addPage([595, 842]);
       y = height - margin;
     }
-    page.drawText(line, { x: margin, y: y, size: fontSize, font: timesRomanFont });
-    y -= fontSize + 4;
+
+    page.drawText(text, {
+      x: margin + indent,
+      y,
+      size,
+      font: bold ? fontBold : fontBody
+    });
+
+    y -= lineHeight;
   }
 
+  // פיצול טקסט לשורות
+  const lines = improvedText.split("\n").map(l => l.trim());
+
+  lines.forEach(line => {
+
+    // כותרת (מסתיימת בנקודתיים)
+    if (line.endsWith(":")) {
+      drawLine(line, titleSize, true);
+      y -= 6;
+      return;
+    }
+
+    // Bullet
+    if (line.startsWith("-")) {
+      const content = "• " + line.replace(/^-/, "").trim();
+      drawLine(content, bodySize, false, 10);
+      return;
+    }
+
+    // שורה רגילה
+    // עוטף שורות ארוכות אוטומטית
+    const maxCharsPerLine = 90;
+    if (line.length > maxCharsPerLine) {
+      const words = line.split(" ");
+      let cur = "";
+
+      for (const w of words) {
+        if ((cur + " " + w).length > maxCharsPerLine) {
+          drawLine(cur);
+          cur = w;
+        } else {
+          cur += " " + w;
+        }
+      }
+      if (cur.trim()) drawLine(cur);
+    } else {
+      drawLine(line);
+    }
+  });
+
+  // שמירה
   const pdfBytes = await pdfDoc.save();
   const outPath = path.join(GENERATED_DIR, filename);
+
   await fsPromises.writeFile(outPath, pdfBytes);
+
   return outPath;
 }
+
 
 // --- Import Google GenAI ---
 import { GoogleGenAI } from "@google/genai";
